@@ -1,0 +1,119 @@
+local ScreenGui = Instance.new("ScreenGui")
+local a = Instance.new("Frame")
+local b = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local TextButton = Instance.new("TextButton")
+local TextLabel = Instance.new("TextLabel")
+local guiname = Instance.new("TextLabel")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+a.Name = "a"
+a.Parent = ScreenGui
+a.Active = true
+a.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+a.BorderSizePixel = 0
+a.Position = UDim2.new(0.0457920805, 0, 0.774477422, 0)
+a.Size = UDim2.new(0, 244, 0, 35)
+
+b.Name = "b"
+b.Parent = a
+b.Active = true
+b.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+b.BorderSizePixel = 0
+b.Position = UDim2.new(0, 0, 1, 0)
+b.Size = UDim2.new(0, 244, 0, 129)
+
+TextBox.Parent = b
+TextBox.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+TextBox.BorderSizePixel = 0
+TextBox.Position = UDim2.new(0.131147534, 0, 0.124031007, 0)
+TextBox.Size = UDim2.new(0, 180, 0, 36)
+TextBox.Font = Enum.Font.Roboto
+TextBox.PlaceholderText = "Player name.."
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.TextSize = 14.000
+
+TextButton.Parent = b
+TextButton.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+TextButton.Position = UDim2.new(0.225409836, 0, 0.527131796, 0)
+TextButton.Size = UDim2.new(0, 134, 0, 34)
+TextButton.Font = Enum.Font.Roboto
+TextButton.Text = "Kill Player"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 15.000
+
+TextLabel.Parent = TextButton
+TextLabel.Active = true
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.Position = UDim2.new(-0.410447747, 0, 1.17647064, 0)
+TextLabel.Size = UDim2.new(0, 244, 0, 21)
+TextLabel.Font = Enum.Font.Roboto
+TextLabel.Text = "Takes a few seconds to kill. Made by GarfieldsRevenge."
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextSize = 11.000
+
+guiname.Name = "guiname"
+guiname.Parent = a
+guiname.Active = true
+guiname.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+guiname.BackgroundTransparency = 1.000
+guiname.Size = UDim2.new(0, 191, 0, 35)
+guiname.Font = Enum.Font.Roboto
+guiname.Text = "Chicago 1949 - Kill Player"
+guiname.TextColor3 = Color3.fromRGB(255, 255, 255)
+guiname.TextSize = 17.000
+
+function dragify(Frame)
+	dragToggle = nil
+	dragSpeed = .25
+	dragInput = nil
+	dragStart = nil
+	dragPos = nil
+
+	function updateInput(input)
+		Delta = input.Position - dragStart
+		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+		game:GetService("TweenService"):Create(Frame, TweenInfo.new(.25), {Position = Position}):Play()
+	end
+
+	Frame.InputBegan:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+			dragToggle = true
+			dragStart = input.Position
+			startPos = Frame.Position
+			input.Changed:Connect(function()
+				if (input.UserInputState == Enum.UserInputState.End) then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+
+	Frame.InputChanged:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			dragInput = input
+		end
+	end)
+
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+		if (input == dragInput and dragToggle) then
+			updateInput(input)
+		end
+	end)
+end
+
+dragify(a)
+
+TextButton.MouseButton1Down:connect(function()
+	local target = TextBox.Text
+	local dude = game:GetService("Players")[target].Character.Humanoid
+
+	while dude.Health ~= 0 do
+		wait(0.5)
+		game:GetService("Players").LocalPlayer.Backpack["Pocket Knife"].RemoteEvent:FireServer(2, dude)
+	end
+end)
